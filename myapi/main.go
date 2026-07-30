@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/kyoya67/reponame/handlers"
+	"github.com/kyoya67/myapi/handlers"
 )
 
 func main() {

@@ -1,4 +1,4 @@
-module github.com/kyoya67/reponame
+module github.com/kyoya67/myapi
 
 go 1.25.5
 
