@@ -20,9 +20,15 @@ func main() {
 	}
 	defer db.Close()
 
-	if err := db.Ping(); err != nil {
-		log.Fatal(err)
+	const sqlStr = `
+	select title, contents, username, nice
+	from articles
+	`
+	rows, err := db.Query(sqlStr)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
-
+	defer rows.Close()
 	log.Println("Successfully connected to the database")
 }
