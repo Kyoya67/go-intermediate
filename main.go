@@ -27,29 +27,24 @@ func main() {
 	FROM articles
 	WHERE article_id = ?
 	`
-	rows, err := db.Query(sqlStr, articleID)
+	row := db.QueryRow(sqlStr, articleID)
+	if err := row.Err(); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	var article models.Article
+	var createdTime sql.NullTime
+
+	err = row.Scan(&article.Title, &article.Contents, &article.UserName, &article.NiceNum, &createdTime)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	defer rows.Close()
 
-	articleArray := make([]models.Article, 0)
-	for rows.Next() {
-		var article models.Article
-		var createdAt sql.NullTime
-		err := rows.Scan(&article.Title, &article.Contents, &article.UserName, &article.NiceNum, &createdAt)
-
-		if createdAt.Valid {
-			article.CreatedAt = createdAt.Time
-		}
-
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			articleArray = append(articleArray, article)
-		}
+	if createdTime.Valid {
+		article.CreatedAt = createdTime.Time
 	}
 
-	fmt.Printf("%+v\n", articleArray)
+	fmt.Printf("%+v\n", article)
 }
