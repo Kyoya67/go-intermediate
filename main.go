@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"dbsample/models"
 	"fmt"
 	"log"
 
@@ -20,15 +21,35 @@ func main() {
 	}
 	defer db.Close()
 
+	articleID := 10
 	const sqlStr = `
-	select title, contents, username, nice
-	from articles
+	SELECT title, contents, username, nice, created_at
+	FROM articles
+	WHERE article_id = ?
 	`
-	rows, err := db.Query(sqlStr)
+	rows, err := db.Query(sqlStr, articleID)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	defer rows.Close()
-	log.Println("Successfully connected to the database")
+
+	articleArray := make([]models.Article, 0)
+	for rows.Next() {
+		var article models.Article
+		var createdAt sql.NullTime
+		err := rows.Scan(&article.Title, &article.Contents, &article.UserName, &article.NiceNum, &createdAt)
+
+		if createdAt.Valid {
+			article.CreatedAt = createdAt.Time
+		}
+
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			articleArray = append(articleArray, article)
+		}
+	}
+
+	fmt.Printf("%+v\n", articleArray)
 }
