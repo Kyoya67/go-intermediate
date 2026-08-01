@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/kyoya67/reponame/models"
+	"github.com/kyoya67/myapi/models"
 )
 
 // GET /hello のハンドラ
