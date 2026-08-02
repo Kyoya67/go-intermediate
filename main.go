@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/kyoya67/myapi/handlers"
+	"github.com/kyoya67/go-intermediate/handlers"
 )
 
 func main() {
