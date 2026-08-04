@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Kyoya67/go-intermediate/handlers"
 	"github.com/gorilla/mux"
-	"github.com/kyoya67/go-intermediate/handlers"
 )
 
 func main() {

@@ -3,9 +3,9 @@ package repositories_test
 import (
 	"testing"
 
-	"github.com/kyoya67/go-intermediate/models"
-	"github.com/kyoya67/go-intermediate/repositories"
-	"github.com/kyoya67/go-intermediate/repositories/testdata"
+	"github.com/Kyoya67/go-intermediate/models"
+	"github.com/Kyoya67/go-intermediate/repositories"
+	"github.com/Kyoya67/go-intermediate/repositories/testdata"
 
 	_ "github.com/go-sql-driver/mysql"
 )

@@ -1,6 +1,6 @@
 package testdata
 
-import "github.com/yourname/reponame/models"
+import "github.com/Kyoya67/go-intermediate/models"
 
 var ArticleTestData = []models.Article{
 	models.Article{

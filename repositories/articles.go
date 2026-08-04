@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/kyoya67/go-intermediate/models"
+	"github.com/Kyoya67/go-intermediate/models"
 )
 
 const articleNumPerpage = 5

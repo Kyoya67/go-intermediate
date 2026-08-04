@@ -1,4 +1,4 @@
-module github.com/kyoya67/go-intermediate
+module github.com/Kyoya67/go-intermediate
 
 go 1.25.5
 

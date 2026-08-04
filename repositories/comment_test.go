@@ -3,8 +3,8 @@ package repositories_test
 import (
 	"testing"
 
-	"github.com/kyoya67/go-intermediate/models"
-	"github.com/kyoya67/go-intermediate/repositories"
+	"github.com/Kyoya67/go-intermediate/models"
+	"github.com/Kyoya67/go-intermediate/repositories"
 )
 
 // SelectCommentList関数のテスト

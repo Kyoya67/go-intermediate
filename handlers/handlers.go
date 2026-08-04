@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Kyoya67/go-intermediate/models"
 	"github.com/gorilla/mux"
-	"github.com/kyoya67/go-intermediate/models"
 )
 
 // GET /hello のハンドラ

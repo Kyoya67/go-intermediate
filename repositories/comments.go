@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/kyoya67/go-intermediate/models"
+	"github.com/Kyoya67/go-intermediate/models"
 )
 
 func InsertComment(db *sql.DB, comment models.Comment) (models.Comment, error) {
