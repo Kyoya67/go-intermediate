@@ -5,10 +5,25 @@ import (
 
 	"github.com/kyoya67/go-intermediate/models"
 	"github.com/kyoya67/go-intermediate/repositories"
+	"github.com/kyoya67/go-intermediate/repositories/testdata"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// SelectArticleList関数のテスト
+func TestSelectArticleList(t *testing.T) {
+	expectedNum := len(testdata.ArticleTestData)
+	got, err := repositories.SelectArticleList(testDB, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if num := len(got); num != expectedNum {
+		t.Errorf("want %d but got %d articles\n", expectedNum, num)
+	}
+}
+
+// SelectArticleDetail関数のテスト
 func TestSelectArticleDetail(t *testing.T) {
 	tests := []struct {
 		testTitle string
@@ -16,23 +31,10 @@ func TestSelectArticleDetail(t *testing.T) {
 	}{
 		{
 			testTitle: "subtest1",
-			expected: models.Article{
-				ID:       1,
-				Title:    "first article",
-				Contents: "This is the test article.",
-				UserName: "saki",
-				NiceNum:  1,
-			},
-		},
-		{
+			expected:  testdata.ArticleTestData[0],
+		}, {
 			testTitle: "subtest2",
-			expected: models.Article{
-				ID:       2,
-				Title:    "second article",
-				Contents: "This is the test article.",
-				UserName: "saki",
-				NiceNum:  2,
-			},
+			expected:  testdata.ArticleTestData[1],
 		},
 	}
 
@@ -61,14 +63,46 @@ func TestSelectArticleDetail(t *testing.T) {
 		})
 	}
 }
-func TestSelectArticleList(t *testing.T) {
-	expectedNum := 2
-	got, err := repositories.SelectArticleList(testDB, 1)
+
+// InsertArticle関数のテスト
+func TestInsertArticle(t *testing.T) {
+	article := models.Article{
+		Title:    "insertTest",
+		Contents: "testest",
+		UserName: "saki",
+	}
+
+	expectedArticleNum := 3
+	newArticle, err := repositories.InsertArticle(testDB, article)
+	if err != nil {
+		t.Error(err)
+	}
+	if newArticle.ID != expectedArticleNum {
+		t.Errorf("new article id is expected %d but got %d\n", expectedArticleNum, newArticle.ID)
+	}
+
+	t.Cleanup(func() {
+		const sqlStr = `
+			delete from articles
+			where title = ? and contents = ? and username = ?
+		`
+		testDB.Exec(sqlStr, article.Title, article.Contents, article.UserName)
+	})
+}
+
+// UpdateNiceNum関数のテスト
+func TestUpdateNiceNum(t *testing.T) {
+	articleID := 1
+	err := repositories.UpdateNiceNum(testDB, articleID)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if num := len(got); num != expectedNum {
-		t.Errorf("want %d but got %d articles\n", expectedNum, num)
+	got, _ := repositories.SelectArticleDetail(testDB, articleID)
+
+	if got.NiceNum-testdata.ArticleTestData[articleID-1].NiceNum != 1 {
+		t.Errorf("fail to update nice num: expected %d but got %d\n",
+			testdata.ArticleTestData[articleID].NiceNum,
+			got.NiceNum)
 	}
 }
