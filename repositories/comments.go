@@ -14,12 +14,15 @@ func InsertComment(db *sql.DB, comment models.Comment) (models.Comment, error) {
 	`
 
 	var newComment models.Comment
-	newComment.CommentID, newComment.ArticleID, newComment.Message, newComment.CreatedAt = comment.CommentID, comment.ArticleID, comment.Message, comment.CreatedAt
+	newComment.ArticleID, newComment.Message = comment.ArticleID, comment.Message
 
-	_, err := db.Exec(sqlStr, comment.ArticleID, comment.Message)
+	result, err := db.Exec(sqlStr, comment.ArticleID, comment.Message)
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	id, err := result.LastInsertId()
+	newComment.CommentID = int(id)
 
 	return newComment, nil
 }
