@@ -23,30 +23,38 @@ func connectDB() error {
 	if err != nil {
 		return err
 	}
+	return testDB.Ping()
+}
+
+func runSQLFile(path string) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	cmd := exec.Command("mysql", "-h", "127.0.0.1", "-u", dbUser, dbDatabase, "--password="+dbPassword)
+	cmd.Stdin = file
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("mysql %s: %w: %s", path, err, output)
+	}
+
 	return nil
 }
 
 func setupTestData() error {
-	cmd := exec.Command("mysql", "-h", "127.0.0.1", "-u", "docker", "sampledb", "--password=docker", "-e", "source ./testdata/setupDB.sql")
-	err := cmd.Run()
-	if err != nil {
-		return err
-	}
-	return nil
+	return runSQLFile("./testdata/setupDB.sql")
 }
 
 func cleanupDB() error {
-	cmd := exec.Command("mysql", "-h", "127.0.0.1", "-u", "docker", "sampledb", "--password=docker", "-e", "source ./testdata/cleanupDB.sql")
-	err := cmd.Run()
-	if err != nil {
-		return err
-	}
-	return nil
+	return runSQLFile("./testdata/cleanupDB.sql")
 }
 
 // 全テスト共通の前処理を書く
 func setup() error {
 	if err := connectDB(); err != nil {
+		fmt.Println("connectDB", err)
 		return err
 	}
 	if err := cleanupDB(); err != nil {
@@ -54,7 +62,7 @@ func setup() error {
 		return err
 	}
 	if err := setupTestData(); err != nil {
-		fmt.Println("setup")
+		fmt.Println("setup", err)
 		return err
 	}
 	return nil
