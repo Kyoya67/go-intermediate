@@ -91,3 +91,18 @@ func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
 	comment := reqComment
 	json.NewEncoder(w).Encode(comment)
 }
+
+func GetCommentListHandler(w http.ResponseWriter, req *http.Request) {
+	articleID, err := strconv.Atoi(mux.Vars(req)["id"])
+	if err != nil {
+		http.Error(w, "Invalid query parameter", http.StatusBadRequest)
+		return
+	}
+
+	// 暫定でこれを追加することで
+	// 「変数articleIDが使われていない」というコンパイルエラーを回避
+	log.Println(articleID)
+
+	commentList := []models.Comment{models.Comment1, models.Comment2}
+	json.NewEncoder(w).Encode(commentList)
+}

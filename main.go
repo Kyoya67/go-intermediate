@@ -16,6 +16,7 @@ func main() {
 	r.HandleFunc("/article/{id}", handlers.ArticleDetailHandler).Methods(http.MethodGet)
 	r.HandleFunc("/article/nice", handlers.PostNiceHandler).Methods(http.MethodPost)
 	r.HandleFunc("/comment", handlers.PostCommentHandler).Methods(http.MethodPost)
+	r.HandleFunc("/comment/list", handlers.GetCommentListHandler).Methods(http.MethodGet)
 	log.Println("server start at port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

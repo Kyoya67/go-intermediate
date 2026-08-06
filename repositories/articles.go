@@ -80,39 +80,20 @@ func SelectArticleDetail(db *sql.DB, articleID int) (models.Article, error) {
 	return article, nil
 }
 
-func UpdateNiceNum(db *sql.DB, articleID int) error {
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
+func UpdateNiceNum(db *sql.DB, articleID int) (models.Article, error) {
+	const sqlUpdateNice = `update articles set nice = nice + 1 where article_id = ?`
 
-	const sqlGetNice = `
-		select nice
-		from articles
-		where article_id = ?;
-	`
-	row := tx.QueryRow(sqlGetNice, articleID)
+	row := db.QueryRow(sqlUpdateNice, articleID)
 	if err := row.Err(); err != nil {
-		tx.Rollback()
-		return err
+		return models.Article{}, err
 	}
 
-	var nicenum int
-	err = row.Scan(&nicenum)
+	var article models.Article
+	var createdTime sql.NullTime
+	err := row.Scan(&article.ID, &article.Title, &article.Contents, &article.UserName, &article.NiceNum, &createdTime)
 	if err != nil {
-		tx.Rollback()
-		return err
+		return models.Article{}, err
 	}
 
-	const sqlUpdateNice = `update articles set nice = ? where article_id = ?`
-	_, err = tx.Exec(sqlUpdateNice, nicenum+1, articleID)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return err
-	}
-	return nil
+	return article, nil
 }
