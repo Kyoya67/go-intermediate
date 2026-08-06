@@ -5,7 +5,7 @@ import (
 	"github.com/Kyoya67/go-intermediate/repositories"
 )
 
-func GetArticleService(articleID int) (models.Article, error) {
+func GetArticleDetailService(articleID int) (models.Article, error) {
 	db, err := connect()
 	if err != nil {
 		return models.Article{}, err
@@ -64,10 +64,10 @@ func PostNiceService(articleID int) (models.Article, error) {
 	}
 	defer db.Close()
 
-	article, err := repositories.UpdateNiceNum(db, articleID)
+	updatedArticle, err := repositories.UpdateNiceNum(db, articleID)
 	if err != nil {
 		return models.Article{}, err
 	}
 
-	return article, nil
+	return updatedArticle, nil
 }

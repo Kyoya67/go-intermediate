@@ -81,19 +81,26 @@ func SelectArticleDetail(db *sql.DB, articleID int) (models.Article, error) {
 }
 
 func UpdateNiceNum(db *sql.DB, articleID int) (models.Article, error) {
-	const sqlUpdateNice = `update articles set nice = nice + 1 where article_id = ?`
+	const sqlUpdateNice = `UPDATE articles SET nice = nice + 1 WHERE article_id = ?`
 
-	row := db.QueryRow(sqlUpdateNice, articleID)
-	if err := row.Err(); err != nil {
-		return models.Article{}, err
-	}
-
-	var article models.Article
-	var createdTime sql.NullTime
-	err := row.Scan(&article.ID, &article.Title, &article.Contents, &article.UserName, &article.NiceNum, &createdTime)
+	result, err := db.Exec(sqlUpdateNice, articleID)
 	if err != nil {
 		return models.Article{}, err
 	}
 
-	return article, nil
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return models.Article{}, err
+	}
+
+	if affected == 0 {
+		return models.Article{}, fmt.Errorf("no rows affected")
+	}
+
+	selectedArticle, err := SelectArticleDetail(db, articleID)
+	if err != nil {
+		return models.Article{}, err
+	}
+
+	return selectedArticle, nil
 }

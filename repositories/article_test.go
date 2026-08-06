@@ -93,16 +93,18 @@ func TestInsertArticle(t *testing.T) {
 // UpdateNiceNum関数のテスト
 func TestUpdateNiceNum(t *testing.T) {
 	articleID := 1
-	err := repositories.UpdateNiceNum(testDB, articleID)
+	_, err := repositories.UpdateNiceNum(testDB, articleID)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	got, _ := repositories.SelectArticleDetail(testDB, articleID)
+	got, err := repositories.SelectArticleDetail(testDB, articleID)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if got.NiceNum-testdata.ArticleTestData[articleID-1].NiceNum != 1 {
 		t.Errorf("fail to update nice num: expected %d but got %d\n",
-			testdata.ArticleTestData[articleID].NiceNum,
-			got.NiceNum)
+			testdata.ArticleTestData[articleID-1].NiceNum, got.NiceNum)
 	}
 }

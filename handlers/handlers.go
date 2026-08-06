@@ -9,6 +9,8 @@ import (
 
 	"github.com/Kyoya67/go-intermediate/models"
 	"github.com/gorilla/mux"
+
+	"github.com/Kyoya67/go-intermediate/services"
 )
 
 // GET /hello のハンドラ
@@ -23,7 +25,11 @@ func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
 	}
 
-	article := reqArticle
+	article, err := services.PostArticleService(reqArticle)
+	if err != nil {
+		http.Error(w, "fail to post article\n", http.StatusInternalServerError)
+		return
+	}
 
 	json.NewEncoder(w).Encode(article)
 }
@@ -45,11 +51,11 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 		page = 1
 	}
 
-	// 暫定でこれを追加することで
-	// 「変数pageが使われていない」というコンパイルエラーを回避
-	log.Println(page)
-
-	articleList := []models.Article{models.Article1, models.Article2}
+	articleList, err := services.GetArticleListService(page)
+	if err != nil {
+		http.Error(w, "fail to get article list\n", http.StatusInternalServerError)
+		return
+	}
 	json.NewEncoder(w).Encode(articleList)
 }
 
@@ -65,7 +71,11 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 	// 「変数articleIDが使われていない」というコンパイルエラーを回避
 	log.Println(articleID)
 
-	article := models.Article1
+	article, err := services.GetArticleDetailService(articleID)
+	if err != nil {
+		http.Error(w, "fail to get article detail\n", http.StatusInternalServerError)
+		return
+	}
 
 	json.NewEncoder(w).Encode(article)
 }
@@ -77,7 +87,11 @@ func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
 	}
 
-	article := reqArticle
+	article, err := services.PostNiceService(reqArticle.ID)
+	if err != nil {
+		http.Error(w, "fail to post nice\n", http.StatusInternalServerError)
+		return
+	}
 	json.NewEncoder(w).Encode(article)
 }
 
@@ -88,7 +102,11 @@ func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
 	}
 
-	comment := reqComment
+	comment, err := services.PostCommentService(reqComment)
+	if err != nil {
+		http.Error(w, "fail to post comment\n", http.StatusInternalServerError)
+		return
+	}
 	json.NewEncoder(w).Encode(comment)
 }
 
@@ -99,10 +117,10 @@ func GetCommentListHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// 暫定でこれを追加することで
-	// 「変数articleIDが使われていない」というコンパイルエラーを回避
-	log.Println(articleID)
-
-	commentList := []models.Comment{models.Comment1, models.Comment2}
+	commentList, err := services.GetCommentListService(articleID)
+	if err != nil {
+		http.Error(w, "fail to get comment list\n", http.StatusInternalServerError)
+		return
+	}
 	json.NewEncoder(w).Encode(commentList)
 }
