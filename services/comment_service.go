@@ -6,7 +6,7 @@ import (
 )
 
 func PostCommentService(comment models.Comment) (models.Comment, error) {
-	db, err := connect()
+	db, err := connectDB()
 	if err != nil {
 		return models.Comment{}, err
 	}
@@ -21,7 +21,7 @@ func PostCommentService(comment models.Comment) (models.Comment, error) {
 }
 
 func GetCommentListService(articleID int) ([]models.Comment, error) {
-	db, err := connect()
+	db, err := connectDB()
 	if err != nil {
 		return nil, err
 	}

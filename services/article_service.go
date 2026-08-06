@@ -6,7 +6,7 @@ import (
 )
 
 func GetArticleDetailService(articleID int) (models.Article, error) {
-	db, err := connect()
+	db, err := connectDB()
 	if err != nil {
 		return models.Article{}, err
 	}
@@ -28,7 +28,7 @@ func GetArticleDetailService(articleID int) (models.Article, error) {
 }
 
 func PostArticleService(article models.Article) (models.Article, error) {
-	db, err := connect()
+	db, err := connectDB()
 	if err != nil {
 		return models.Article{}, err
 	}
@@ -43,7 +43,7 @@ func PostArticleService(article models.Article) (models.Article, error) {
 }
 
 func GetArticleListService(page int) ([]models.Article, error) {
-	db, err := connect()
+	db, err := connectDB()
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func GetArticleListService(page int) ([]models.Article, error) {
 }
 
 func PostNiceService(articleID int) (models.Article, error) {
-	db, err := connect()
+	db, err := connectDB()
 	if err != nil {
 		return models.Article{}, err
 	}
