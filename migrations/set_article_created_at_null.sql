@@ -1,6 +1,0 @@
-ALTER TABLE articles
-MODIFY COLUMN created_at DATETIME NULL DEFAULT CURRENT_TIMESTAMP;
-
-UPDATE articles
-SET created_at = NULL
-WHERE article_id = 3;
