@@ -5,14 +5,9 @@ import (
 	"github.com/Kyoya67/go-intermediate/repositories"
 )
 
-func PostCommentService(comment models.Comment) (models.Comment, error) {
-	db, err := connectDB()
-	if err != nil {
-		return models.Comment{}, err
-	}
-	defer db.Close()
+func (s *MyAppService) PostCommentService(comment models.Comment) (models.Comment, error) {
 
-	newComment, err := repositories.InsertComment(db, comment)
+	newComment, err := repositories.InsertComment(s.db, comment)
 	if err != nil {
 		return models.Comment{}, err
 	}
@@ -20,14 +15,9 @@ func PostCommentService(comment models.Comment) (models.Comment, error) {
 	return newComment, nil
 }
 
-func GetCommentListService(articleID int) ([]models.Comment, error) {
-	db, err := connectDB()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
+func (s *MyAppService) GetCommentListService(articleID int) ([]models.Comment, error) {
 
-	commentList, err := repositories.SelectCommentList(db, articleID)
+	commentList, err := repositories.SelectCommentList(s.db, articleID)
 	if err != nil {
 		return nil, err
 	}
