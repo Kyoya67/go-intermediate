@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"github.com/Kyoya67/go-intermediate/api"
-
 	_ "github.com/go-sql-driver/mysql"
 )
 
