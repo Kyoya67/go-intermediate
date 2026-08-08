@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Kyoya67/go-intermediate/routers"
+	"github.com/Kyoya67/go-intermediate/api"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -26,7 +26,7 @@ func main() {
 	}
 	defer db.Close()
 
-	r := routers.NewRouter(db)
+	r := api.NewRouter(db)
 
 	log.Println("server start at port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
