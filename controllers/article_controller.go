@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/Kyoya67/go-intermediate/apperrors"
 	"github.com/Kyoya67/go-intermediate/controllers/services"
 	"github.com/Kyoya67/go-intermediate/models"
 	"github.com/gorilla/mux"
@@ -23,7 +23,9 @@ func NewArticleController(s services.ArticleServicer) *ArticleController {
 func (c *ArticleController) PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 	var reqArticle models.Article
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
+		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
 		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
+		return
 	}
 
 	article, err := c.service.PostArticleService(reqArticle)
@@ -45,6 +47,7 @@ func (c *ArticleController) ArticleListHandler(w http.ResponseWriter, req *http.
 		var err error
 		page, err = strconv.Atoi(p[0])
 		if err != nil {
+			err = apperrors.BadParameter.Wrap(err, "queryparam must be number")
 			http.Error(w, "Invalid query parameter", http.StatusBadRequest)
 			return
 		}
@@ -64,13 +67,10 @@ func (c *ArticleController) ArticleListHandler(w http.ResponseWriter, req *http.
 func (c *ArticleController) ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 	articleID, err := strconv.Atoi(mux.Vars(req)["id"])
 	if err != nil {
+		err = apperrors.BadParameter.Wrap(err, "pathparam must be number")
 		http.Error(w, "Invalid query parameter", http.StatusBadRequest)
 		return
 	}
-
-	// 暫定でこれを追加することで
-	// 「変数articleIDが使われていない」というコンパイルエラーを回避
-	log.Println(articleID)
 
 	article, err := c.service.GetArticleDetailService(articleID)
 	if err != nil {
@@ -85,6 +85,7 @@ func (c *ArticleController) ArticleDetailHandler(w http.ResponseWriter, req *htt
 func (c *ArticleController) PostNiceHandler(w http.ResponseWriter, req *http.Request) {
 	var reqArticle models.Article
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
+		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
 		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
 	}
 
