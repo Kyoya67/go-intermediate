@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/Kyoya67/go-intermediate/models"
 )
@@ -18,10 +17,13 @@ func InsertComment(db *sql.DB, comment models.Comment) (models.Comment, error) {
 
 	result, err := db.Exec(sqlStr, comment.ArticleID, comment.Message)
 	if err != nil {
-		fmt.Println(err)
+		return models.Comment{}, err
 	}
 
 	id, err := result.LastInsertId()
+	if err != nil {
+		return models.Comment{}, err
+	}
 	newComment.CommentID = int(id)
 
 	return newComment, nil
@@ -29,9 +31,9 @@ func InsertComment(db *sql.DB, comment models.Comment) (models.Comment, error) {
 
 func SelectCommentList(db *sql.DB, articleID int) ([]models.Comment, error) {
 	const sqlStr = `
-		select *
-		from comments
-		where article_id = ?;
+		SELECT *
+		FROM comments
+		WHERE article_id = ?;
 	`
 
 	commentList := make([]models.Comment, 0)

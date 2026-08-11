@@ -7,10 +7,13 @@ import (
 	"github.com/Kyoya67/go-intermediate/models"
 )
 
-const articleNumPerpage = 5
+const (
+	articleNumPerPage = 5
+)
 
+// 新規投稿をDBにinsertする関数
 func InsertArticle(db *sql.DB, article models.Article) (models.Article, error) {
-	const sqltr = `
+	const sqlStr = `
 	INSERT INTO articles (title, contents, username, nice, created_at) values
 	(?, ?, ?, 0, now());
 	`
@@ -18,9 +21,9 @@ func InsertArticle(db *sql.DB, article models.Article) (models.Article, error) {
 	var newArticle models.Article
 	newArticle.Title, newArticle.Contents, newArticle.UserName = article.Title, article.Contents, article.UserName
 
-	result, err := db.Exec(sqltr, article.Title, article.Contents, article.UserName)
+	result, err := db.Exec(sqlStr, article.Title, article.Contents, article.UserName)
 	if err != nil {
-		fmt.Println(err)
+		return models.Article{}, err
 	}
 
 	id, _ := result.LastInsertId()
@@ -30,6 +33,7 @@ func InsertArticle(db *sql.DB, article models.Article) (models.Article, error) {
 	return newArticle, nil
 }
 
+// 投稿一覧をDBから取得する関数
 func SelectArticleList(db *sql.DB, page int) ([]models.Article, error) {
 	const sqlStr = `
 		SELECT article_id, title, contents, username, nice
@@ -37,7 +41,7 @@ func SelectArticleList(db *sql.DB, page int) ([]models.Article, error) {
 		LIMIT ? OFFSET ?;
 	`
 
-	rows, err := db.Query(sqlStr, articleNumPerpage, (page-1)*articleNumPerpage)
+	rows, err := db.Query(sqlStr, articleNumPerPage, ((page - 1) * articleNumPerPage))
 	if err != nil {
 		return nil, err
 	}
@@ -54,13 +58,13 @@ func SelectArticleList(db *sql.DB, page int) ([]models.Article, error) {
 	return articleArray, nil
 }
 
+// 投稿IDを指定して、記事データを取得する関数
 func SelectArticleDetail(db *sql.DB, articleID int) (models.Article, error) {
 	const sqlStr = `
 		SELECT *
 		FROM articles
 		WHERE article_id = ?;
 	`
-
 	row := db.QueryRow(sqlStr, articleID)
 	if err := row.Err(); err != nil {
 		return models.Article{}, err
