@@ -25,13 +25,13 @@ func (c *CommentController) PostCommentHandler(w http.ResponseWriter, req *http.
 	var reqComment models.Comment
 	if err := json.NewDecoder(req.Body).Decode(&reqComment); err != nil {
 		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
-		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
+		apperrors.ErrorHandler(w, req, err)
 		return
 	}
 
 	comment, err := c.service.PostCommentService(reqComment)
 	if err != nil {
-		http.Error(w, "fail to post comment\n", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, req, err)
 		return
 	}
 	json.NewEncoder(w).Encode(comment)
@@ -41,14 +41,14 @@ func (c *CommentController) PostCommentHandler(w http.ResponseWriter, req *http.
 func (c *CommentController) GetCommentListHandler(w http.ResponseWriter, req *http.Request) {
 	articleID, err := strconv.Atoi(mux.Vars(req)["id"])
 	if err != nil {
-		err = apperrors.BadParameter.Wrap(err, "pathparam must be number")
-		http.Error(w, "Invalid query parameter", http.StatusBadRequest)
+		err = apperrors.BadParam.Wrap(err, "pathparam must be number")
+		apperrors.ErrorHandler(w, req, err)
 		return
 	}
 
 	commentList, err := c.service.GetCommentListService(articleID)
 	if err != nil {
-		http.Error(w, "fail to get comment list\n", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, req, err)
 		return
 	}
 	json.NewEncoder(w).Encode(commentList)
