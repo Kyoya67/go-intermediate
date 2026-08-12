@@ -24,7 +24,7 @@ func TestArticleListHandler(t *testing.T) {
 
 			res := httptest.NewRecorder()
 
-			articleController.ArticleDetailHandler(res, req)
+			articleController.ArticleListHandler(res, req)
 
 			if res.Code != tt.resultCode {
 				t.Errorf("unexpected StatusCode: want %d but %d\n", tt.resultCode, res.Code)
