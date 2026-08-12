@@ -19,7 +19,7 @@ func NewRouter(db *sql.DB) *mux.Router {
 
 	r.HandleFunc("/article", articleController.PostArticleHandler).Methods(http.MethodPost)
 	r.HandleFunc("/article/list", articleController.ArticleListHandler).Methods(http.MethodGet)
-	r.HandleFunc("/article/{id:[0-9]+}", articleController.ArticleDetailHandler).Methods(http.MethodGet)
+	r.HandleFunc("/article/{id}", articleController.ArticleDetailHandler).Methods(http.MethodGet)
 	r.HandleFunc("/article/nice", articleController.PostNiceHandler).Methods(http.MethodPost)
 
 	r.HandleFunc("/comment", commentController.PostCommentHandler).Methods(http.MethodPost)
