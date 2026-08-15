@@ -3,7 +3,6 @@ package services
 import (
 	"database/sql"
 	"errors"
-	"sync"
 
 	"github.com/Kyoya67/go-intermediate/apperrors"
 	"github.com/Kyoya67/go-intermediate/models"
@@ -11,26 +10,40 @@ import (
 )
 
 func (s *MyAppService) GetArticleDetailService(articleID int) (models.Article, error) {
+	type articleResult struct {
+		article models.Article
+		err     error
+	}
+	articleChan := make(chan articleResult)
+	defer close(articleChan)
+	go func(ch chan<- articleResult, db *sql.DB, articleID int) {
+		article, err := repositories.SelectArticleDetail(s.db, articleID)
+		ch <- articleResult{article: article, err: err}
+	}(articleChan, s.db, articleID)
+
+	type commentResult struct {
+		commentList *[]models.Comment
+		err         error
+	}
+	commentChan := make(chan commentResult)
+	defer close(commentChan)
+	go func(ch chan<- commentResult, db *sql.DB, articleID int) {
+		commentList, err := repositories.SelectCommentList(s.db, articleID)
+		ch <- commentResult{commentList: &commentList, err: err}
+	}(commentChan, s.db, articleID)
+
 	var article models.Article
 	var commentList []models.Comment
 	var articleGetErr, commentGetErr error
 
-	var wg sync.WaitGroup
-	wg.Add(2)
-
-	go func() {
-		defer wg.Done()
-		newArticle, err := repositories.SelectArticleDetail(s.db, articleID)
-		article, articleGetErr = newArticle, err
-	}()
-
-	go func() {
-		defer wg.Done()
-		newCommentList, err := repositories.SelectCommentList(s.db, articleID)
-		commentList, commentGetErr = newCommentList, err
-	}()
-
-	wg.Wait()
+	for i := 0; i < 2; i++ {
+		select {
+		case ar := <-articleChan:
+			article, articleGetErr = ar.article, ar.err
+		case cr := <-commentChan:
+			commentList, commentGetErr = *cr.commentList, cr.err
+		}
+	}
 
 	if articleGetErr != nil {
 		if errors.Is(articleGetErr, sql.ErrNoRows) {
@@ -46,7 +59,7 @@ func (s *MyAppService) GetArticleDetailService(articleID int) (models.Article, e
 		return models.Article{}, err
 	}
 
-	article.CommentList = commentList
+	article.CommentList = append(article.CommentList, commentList...)
 
 	return article, nil
 }
