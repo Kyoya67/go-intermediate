@@ -18,24 +18,17 @@ func (s *MyAppService) GetArticleDetailService(articleID int) (models.Article, e
 	var wg sync.WaitGroup
 	wg.Add(2)
 
-	var amu sync.Mutex
-	var cmu sync.Mutex
-
-	go func(db *sql.DB, articleID int) {
+	go func() {
 		defer wg.Done()
 		newArticle, err := repositories.SelectArticleDetail(s.db, articleID)
-		amu.Lock()
 		article, articleGetErr = newArticle, err
-		amu.Unlock()
-	}(s.db, articleID)
+	}()
 
-	go func(db *sql.DB, articleID int) {
+	go func() {
 		defer wg.Done()
 		newCommentList, err := repositories.SelectCommentList(s.db, articleID)
-		cmu.Lock()
 		commentList, commentGetErr = newCommentList, err
-		cmu.Unlock()
-	}(s.db, articleID)
+	}()
 
 	wg.Wait()
 
