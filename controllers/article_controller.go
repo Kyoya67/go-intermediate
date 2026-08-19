@@ -2,10 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/Kyoya67/go-intermediate/apperrors"
+	"github.com/Kyoya67/go-intermediate/common"
 	"github.com/Kyoya67/go-intermediate/controllers/services"
 	"github.com/Kyoya67/go-intermediate/models"
 	"github.com/gorilla/mux"
@@ -24,6 +26,13 @@ func (c *ArticleController) PostArticleHandler(w http.ResponseWriter, req *http.
 	var reqArticle models.Article
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
 		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
+		apperrors.ErrorHandler(w, req, err)
+		return
+	}
+
+	authedUserName := common.GetUserName(req.Context())
+	if reqArticle.UserName != authedUserName {
+		err := apperrors.NotMatchUser.Wrap(errors.New("does not match reqBody user and idtoken user"), "user mismatch")
 		apperrors.ErrorHandler(w, req, err)
 		return
 	}
