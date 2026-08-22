@@ -34,11 +34,11 @@ func exampleCancel() {
 
 // exampleTimeout は、処理に制限時間を設定する例です。
 func exampleTimeout() {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	select {
-	case <-time.After(2 * time.Second):
+	case <-time.After(1 * time.Second):
 		fmt.Println("処理完了")
 	case <-ctx.Done():
 		fmt.Println("タイムアウト:", ctx.Err())
@@ -58,8 +58,26 @@ func exampleValue() {
 	}
 }
 
+type myInfo struct{}
+
+func myFunc(ch chan myInfo) {
+	time.Sleep(500 * time.Millisecond)
+	ch <- myInfo{}
+}
+
+// exampleChannel は、goroutineからchannelへ値を送る例です。
+func exampleChannel() {
+	info := make(chan myInfo)
+
+	go myFunc(info)
+
+	result := <-info
+	fmt.Println("受信:", result)
+}
+
 func main() {
 	exampleCancel()
 	exampleTimeout()
 	exampleValue()
+	exampleChannel()
 }
