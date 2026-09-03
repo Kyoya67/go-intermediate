@@ -82,7 +82,7 @@ func (s *MyAppService) GetArticleListService(page int) ([]models.Article, error)
 	}
 
 	if len(articleList) == 0 {
-		err := apperrors.NAData.Wrap(ErrNoData, "no data")
+		err := apperrors.NAData.Wrap(errors.New("get 0 record from db.Query"), "no data")
 		return nil, err
 	}
 	return articleList, nil
