@@ -8,9 +8,10 @@ import (
 )
 
 func main() {
-	// client := new(http.Client)
+	client := new(http.Client)
 
-	// _, err := client.Get("fooooo")
+	_, err := client.Get("fooooo")
+	fmt.Printf("err: [%T] %v\n", err, err)
 	// clientErr := err.(*url.Error)
 
 	// fmt.Println("Op:", clientErr.Op)
@@ -27,9 +28,9 @@ func main() {
 	// fmt.Println("Err:", strconvErr.Err)
 	// fmt.Println(strconvErr)
 
-	if err := doSomething(); err != nil {
-		fmt.Println("Error:", err)
-	}
+	// if err := doSomething(); err != nil {
+	// 	fmt.Println("Error:", err)
+	// }
 }
 
 func getStrconvNumError() error {
